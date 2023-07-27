@@ -1,0 +1,91 @@
+//Codigo para mostrar solo el encabezado de la tabla "Empleado" 
+//C# Y Windows Forms
+
+using System;
+using System.Data.SqlClient;
+using System.Windows.Forms;
+
+namespace Actividad2
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            SqlConnection con = new("Data source = " +
+                "DESKTOP-87PL417\\SQLEXPRESS;" +
+                "Initial Catalog=UNI;" +
+                "Integrated Security=True");
+
+            try
+            {
+                con.Open();
+                MessageBox.Show("La conexion se realizo satisfactoriamente");
+            }
+            catch
+            {
+                MessageBox.Show("La conexion no pudo realizarse");
+
+            }
+            finally
+            {
+                con.Close();
+            }
+        
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            SqlConnection con = new SqlConnection("Data source = " +
+               "DESKTOP-87PL417\\SQLEXPRESS;" +
+               "Initial Catalog=UNI;" +
+               "Integrated Security=True");
+
+            SqlDataReader rdr = null;
+
+            try
+            {
+                con.Open();
+                SqlCommand cmd = new SqlCommand("SELECT TOP 0 [Numero_Empleado], [Nombre], [Apellido_Materno], [Apellido_Paterno], [Fecha_Nac], [RFC], [Puesto], [Descripcion_Puesto], [Directivo], [Num_Directivo], [Num_centro_trab] FROM [UNI].[dbo].[Empleado]", con);
+                rdr = cmd.ExecuteReader();
+
+                // Mostrar solo el encabezado de la tabla en el DataGridView
+                dataGridView1.Rows.Clear();
+                dataGridView1.Columns.Clear();
+
+                // Agregar las columnas al DataGridView
+                for (int i = 0; i < rdr.FieldCount; i++)
+                {
+                    dataGridView1.Columns.Add(rdr.GetName(i), rdr.GetName(i));
+                }
+
+                MessageBox.Show("El encabezado de la tabla se mostró exitosamente");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo mostrar el encabezado de la tabla: " + ex.Message);
+            }
+            finally
+            {
+                if (rdr != null)
+                {
+                    rdr.Close();
+                }
+
+                if (con != null && con.State == System.Data.ConnectionState.Open)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // Lógica adicional para manejar eventos de clic en el contenido de las celdas del DataGridView (no aplica de momento ya que solo estamos mostrando el encabezado de la tabla) 
+        }
+    }
+}
